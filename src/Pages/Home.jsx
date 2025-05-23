@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { FaArrowDown } from "react-icons/fa";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { TbLockFilled, TbLockOpen2 } from "react-icons/tb";
+import { BarChart, Bar, CartesianGrid } from "recharts";
+
 const users = [
   {
     name: "Clare, Alex",
@@ -16,7 +19,6 @@ const users = [
     lastSeen: "less than a minute ago",
     active: true,
   },
-
   {
     name: "Zappa, Frank",
     email: "zappa_f@citybank.com",
@@ -25,14 +27,34 @@ const users = [
     active: true,
   },
 ];
+
 const Home = () => {
   const [selected, setSelected] = useState([]);
+  const data = [
+    { name: "Jan", uv: 400 },
+    { name: "Feb", uv: 300 },
+    { name: "Mar", uv: 200 },
+    { name: "Apr", uv: 278 },
+    { name: "May", uv: 189 },
+    { name: "Jun", uv: 239 },
+  ];
 
+  // Toggle single user
   const toggleSelect = (email) => {
     setSelected((prev) =>
       prev.includes(email) ? prev.filter((e) => e !== email) : [...prev, email]
     );
   };
+
+  // Toggle all users
+  const toggleSelectAll = () => {
+    if (selected.length === users.length) {
+      setSelected([]);
+    } else {
+      setSelected(users.map((u) => u.email));
+    }
+  };
+
   return (
     <div className="p-4 bg-white rounded-xl">
       {/* Actions */}
@@ -47,13 +69,23 @@ const Home = () => {
           <RiDeleteBin5Fill />
         </button>
       </div>
+
       {/* Table */}
       <table className="min-w-full table-auto text-sm text-left">
         <thead>
           <tr className="border-b border-gray-200">
-            <th></th>
+            <th className="p-2 ">
+              <input
+                type="checkbox"
+                className="accent-blue-500"
+                checked={selected.length === users.length}
+                onChange={toggleSelectAll}
+              />
+            </th>
             <th className="p-2 font-semibold">Name</th>
-            <th className="p-2 font-semibold">Email</th>
+            <th className="p-2 font-semibold flex items-center gap-2">
+              Email <FaArrowDown className="text-gray-400" />
+            </th>
             <th className="p-2 font-semibold">Last seen</th>
           </tr>
         </thead>
@@ -62,7 +94,7 @@ const Home = () => {
             <tr
               key={idx}
               className={`border-b border-gray-200${
-                !user.active ? "text-gray-400 line-through" : ""
+                !user.active ? " text-gray-400 line-through" : ""
               }`}
             >
               <td className="p-2">
@@ -78,7 +110,13 @@ const Home = () => {
                 <div className="text-xs text-gray-500">{user.role}</div>
               </td>
               <td className="p-2">{user.email}</td>
-              <td className="p-2 relative group">{user.lastSeen}</td>
+              <td className="p-2 relative group">
+                {user.lastSeen}
+                <BarChart width={70} height={30} data={data}>
+                  <CartesianGrid stroke="" strokeDasharray=" " />
+                  <Bar dataKey="uv" fill="#8ac8ff" barSize={8} />
+                </BarChart>
+              </td>
             </tr>
           ))}
         </tbody>
