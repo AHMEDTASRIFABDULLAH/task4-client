@@ -9,6 +9,7 @@ import AuthProvider from "./Hooks/AuthProvider";
 import Err from "./Pages/Err";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
+import PrivateRoute from "./Pages/PrivateRoute";
 
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
@@ -19,7 +20,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />,
+        element: (
+          <PrivateRoute>
+            <Home />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/login",

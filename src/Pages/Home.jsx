@@ -1,14 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FaArrowDown } from "react-icons/fa";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { TbLockFilled, TbLockOpen2 } from "react-icons/tb";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
 import useAxiosPublic from "../Hooks/useAxiosPublic";
 import Swal from "sweetalert2";
+import { AuthContext } from "../Hooks/AuthProvider";
+import { format } from "timeago.js";
+import { Tooltip as ReactTooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 const Home = () => {
   const [selected, setSelected] = useState([]);
   const axiosPublic = useAxiosPublic();
+  const { setIsUser, LoginEmail } = useContext(AuthContext);
   const {
     data: users = [],
     refetch,
@@ -100,7 +105,7 @@ const Home = () => {
           });
           refetch();
           Swal.fire({
-            title: "Updated!",
+            title: "Bloked!",
             icon: "success",
           });
           setSelected([]);
@@ -140,7 +145,7 @@ const Home = () => {
           });
           refetch();
           Swal.fire({
-            title: "Updated!",
+            title: "Active!",
             icon: "success",
           });
           setSelected([]);
@@ -153,6 +158,15 @@ const Home = () => {
         }
       }
     });
+  };
+  const handelLogout = async () => {
+    try {
+      await axiosPublic.patch("/update-time", {
+        email: LoginEmail,
+        logoutAt: new Date(),
+      });
+      setIsUser(false);
+    } catch (err) {}
   };
   if (isLoading) return <p className="p-4">Loading...</p>;
   const newData = [
@@ -184,9 +198,13 @@ const Home = () => {
         >
           <RiDeleteBin5Fill />
         </button>
+        <button
+          onClick={handelLogout}
+          className="font-semibold text-red-400 border-red-400 border px-4 py-2 flex items-center gap-1 rounded-md cursor-pointer hover:bg-blue-50 transition"
+        >
+          Logout
+        </button>
       </div>
-
-      {/* Table */}
       <table className="min-w-full table-auto text-sm text-left">
         <thead>
           <tr className="border-b border-gray-200">
@@ -223,17 +241,30 @@ const Home = () => {
               </td>
               <td className="p-2">
                 <div>{user.name}</div>
-                <div className="text-xs text-gray-500">{user.status}</div>
+                <div className="text-xs text-gray-500 flex items-center gap-1">
+                  {user.status}
+                </div>
               </td>
               <td className="p-2">{user.email}</td>
-              <td className="p-2 relative group">
+              <td>
                 <div className="text-xs text-gray-600">
-                  {/* {new Date(user.createdAt).toLocaleDateString()} */}
-                  {new Date(user.createdAt).toLocaleTimeString()}
+                  {format(user?.createdAt)}
                 </div>
-                <BarChart width={70} height={30} data={newData}>
-                  <Bar dataKey="uv" fill="#8ac8ff" barSize={8} />
-                </BarChart>
+                <div
+                  data-tooltip-id={`tooltip-${user._id}`}
+                  data-tooltip-content={`date : ${new Date(
+                    user.createdAt
+                  ).toLocaleDateString()}`}
+                >
+                  <BarChart width={70} height={30} data={newData}>
+                    <Bar dataKey="uv" fill="#8ac8ff" barSize={8} />
+                  </BarChart>
+                  <ReactTooltip
+                    id={`tooltip-${user._id}`}
+                    place="left"
+                    className="  font-semibold z-50"
+                  />
+                </div>
               </td>
             </tr>
           ))}

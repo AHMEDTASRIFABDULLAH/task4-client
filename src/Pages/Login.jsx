@@ -1,11 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import bgImg from "../assets/register.jpg";
 import useAxiosPublic from "../Hooks/useAxiosPublic";
 import { useContext } from "react";
 import { AuthContext } from "../Hooks/AuthProvider";
+import Swal from "sweetalert2";
 const Login = () => {
   const axiosPublic = useAxiosPublic();
-  const { setIsUser } = useContext(AuthContext);
+  const { setIsUser, setLoginEmail } = useContext(AuthContext);
+  const navigate = useNavigate();
   const handelLogin = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -14,8 +16,16 @@ const Login = () => {
 
     try {
       const res = await axiosPublic.post("/login", { email, password });
-      alert(res.data.message);
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: `${res?.data?.message || "Login successful"}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
       setIsUser(true);
+      setLoginEmail(email);
+      navigate("/");
     } catch (err) {
       if (err.response) {
         alert(err.response.data.message);
