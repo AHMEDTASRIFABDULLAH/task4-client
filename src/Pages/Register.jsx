@@ -33,7 +33,19 @@ const Register = () => {
       setIsUser(true);
       navigate("/");
     } catch (err) {
-      alert(err.message);
+      if (err.response) {
+        Swal.fire({
+          icon: "error",
+          title: "Register Failed",
+          text: err.response.data.message,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
     }
   };
   return (

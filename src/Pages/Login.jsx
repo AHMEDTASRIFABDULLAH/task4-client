@@ -28,9 +28,17 @@ const Login = () => {
       navigate("/");
     } catch (err) {
       if (err.response) {
-        alert(err.response.data.message);
+        Swal.fire({
+          icon: "error",
+          title: "Login Failed",
+          text: err.response.data.message,
+        });
       } else {
-        alert("Something went wrong.");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
       }
     }
   };
@@ -41,7 +49,6 @@ const Login = () => {
           <p className="mt-3 text-xl text-center text-gray-600 ">
             Welcome back!
           </p>
-
           <div className="flex items-center justify-between mt-4">
             <span className="w-1/5 border-b border-gray-300 lg:w-1/4"></span>
 
