@@ -1,12 +1,58 @@
-# React + Vite
+# Task 4 – Itransition4Juniors
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a full-stack **User Management Admin Panel** built with **React**, **Tailwind CSS**, **Express**, and **MongoDB**. The project was built as part of the **ItransitionJuniors** task series.
 
-Currently, two official plugins are available:
+## 🔗 Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+👉 [Live Site](https://itransition4.netlify.app/)
 
-## Expanding the ESLint configuration
+## 📦 Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Client** (Frontend): [task4-client](https://github.com/AHMEDTASRIFABDULLAH/task4-client)
+- **Server** (Backend): [task4-server](https://github.com/AHMEDTASRIFABDULLAH/task4_server)
+
+---
+
+## 🚀 Features
+
+- ✅ User Registration & Login
+- ✅ Bulk Actions (Block, Unblock, Delete)
+- ✅ Role-based Access Control
+- ✅ Realtime UI Updates with TanStack Query
+- ✅ Tooltips with React Tooltip
+- ✅ Sweet Alert 2 for Notifications
+- ✅ Time formatting using timeago.js
+- ✅ Fully Responsive UI
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- React 19
+- Tailwind CSS 4
+- Axios
+- React Router DOM
+- TanStack Query
+- SweetAlert2
+- React Tooltip
+- Timeago.js
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB (without Mongoose)
+- CORS & JSON parsing
+- Nodemailer for email notifications
+
+---
+
+## 🔧 Available Scripts
+
+In the project directory, you can run:
+
+```bash
+npm run dev
+```
