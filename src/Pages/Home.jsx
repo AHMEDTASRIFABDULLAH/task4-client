@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import { FaArrowDown } from "react-icons/fa";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { TbLockFilled, TbLockOpen2 } from "react-icons/tb";
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
+import { BarChart, Bar } from "recharts";
 import useAxiosPublic from "../Hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 import { AuthContext } from "../Hooks/AuthProvider";
@@ -14,6 +14,7 @@ const Home = () => {
   const [selected, setSelected] = useState([]);
   const axiosPublic = useAxiosPublic();
   const { setIsUser, LoginEmail } = useContext(AuthContext);
+
   const {
     data: users = [],
     refetch,
@@ -168,6 +169,10 @@ const Home = () => {
       setIsUser(false);
     } catch (err) {}
   };
+  const allBlocked = users?.every((user) => user.status === "blocked");
+  if (allBlocked) {
+    setIsUser(false);
+  }
   if (isLoading) return <p className="p-4">Loading...</p>;
   const newData = [
     { name: "Jan", uv: 400 },

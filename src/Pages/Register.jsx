@@ -23,6 +23,8 @@ const Register = () => {
     };
     try {
       const result = await axiosPublic.post("/register", data);
+      setIsUser(true);
+      navigate("/");
       Swal.fire({
         position: "center",
         icon: "success",
@@ -30,8 +32,6 @@ const Register = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      setIsUser(true);
-      navigate("/");
     } catch (err) {
       if (err.response) {
         Swal.fire({
