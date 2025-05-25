@@ -45,7 +45,6 @@ This is a full-stack **User Management Admin Panel** built with **React**, **Tai
 - Express.js
 - MongoDB (without Mongoose)
 - CORS & JSON parsing
-- Nodemailer for email notifications
 
 ---
 
