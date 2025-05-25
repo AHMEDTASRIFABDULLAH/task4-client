@@ -1,52 +1,33 @@
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { FaArrowDown } from "react-icons/fa";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { TbLockFilled, TbLockOpen2 } from "react-icons/tb";
-import { BarChart, Bar, CartesianGrid } from "recharts";
-
-const users = [
-  {
-    name: "Clare, Alex",
-    email: "a_clare42@gmail.com",
-    role: "N/A",
-    lastSeen: "5 minutes ago",
-    active: true,
-  },
-  {
-    name: "Morrison, Jim",
-    email: "dmtimer9@dealyaari.com",
-    role: "CFO, Meta Platforms, Inc.",
-    lastSeen: "less than a minute ago",
-    active: true,
-  },
-  {
-    name: "Zappa, Frank",
-    email: "zappa_f@citybank.com",
-    role: "Architect, Meta Platforms, Inc.",
-    lastSeen: "less than a minute ago",
-    active: true,
-  },
-];
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
+import useAxiosPublic from "../Hooks/useAxiosPublic";
 
 const Home = () => {
   const [selected, setSelected] = useState([]);
-  const data = [
-    { name: "Jan", uv: 400 },
-    { name: "Feb", uv: 300 },
-    { name: "Mar", uv: 200 },
-    { name: "Apr", uv: 278 },
-    { name: "May", uv: 189 },
-    { name: "Jun", uv: 239 },
-  ];
+  const axiosPublic = useAxiosPublic();
+  console.log(selected);
+  const {
+    data: users = [],
+    refetch,
+    isLoading,
+  } = useQuery({
+    queryKey: ["allUsers"],
+    queryFn: async () => {
+      const { data } = await axiosPublic.get("/users");
+      return data;
+    },
+  });
 
-  // Toggle single user
   const toggleSelect = (email) => {
     setSelected((prev) =>
       prev.includes(email) ? prev.filter((e) => e !== email) : [...prev, email]
     );
   };
 
-  // Toggle all users
   const toggleSelectAll = () => {
     if (selected.length === users.length) {
       setSelected([]);
@@ -55,6 +36,15 @@ const Home = () => {
     }
   };
 
+  if (isLoading) return <p className="p-4">Loading...</p>;
+  const newData = [
+    { name: "Jan", uv: 400 },
+    { name: "Feb", uv: 300 },
+    { name: "Mar", uv: 200 },
+    { name: "Apr", uv: 278 },
+    { name: "May", uv: 189 },
+    { name: "Jun", uv: 239 },
+  ];
   return (
     <div className="p-4 bg-white rounded-xl">
       {/* Actions */}
@@ -74,7 +64,7 @@ const Home = () => {
       <table className="min-w-full table-auto text-sm text-left">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="p-2 ">
+            <th className="p-2">
               <input
                 type="checkbox"
                 className="accent-blue-500"
@@ -94,7 +84,7 @@ const Home = () => {
             <tr
               key={idx}
               className={`border-b border-gray-200${
-                !user.active ? " text-gray-400 line-through" : ""
+                user.status === "blocked" ? " text-gray-400 line-through" : ""
               }`}
             >
               <td className="p-2">
@@ -107,13 +97,16 @@ const Home = () => {
               </td>
               <td className="p-2">
                 <div>{user.name}</div>
-                <div className="text-xs text-gray-500">{user.role}</div>
+                <div className="text-xs text-gray-500">{user.status}</div>
               </td>
               <td className="p-2">{user.email}</td>
               <td className="p-2 relative group">
-                {user.lastSeen}
-                <BarChart width={70} height={30} data={data}>
-                  <CartesianGrid stroke="" strokeDasharray=" " />
+                <div className="text-xs text-gray-600">
+                  {/* {new Date(user.createdAt).toLocaleDateString()} */}
+                  {new Date(user.createdAt).toLocaleTimeString()}
+                </div>
+                <BarChart width={70} height={30} data={newData}>
+                  {/* <CartesianGrid strokeDasharray="3 3" /> */}
                   <Bar dataKey="uv" fill="#8ac8ff" barSize={8} />
                 </BarChart>
               </td>

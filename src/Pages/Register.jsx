@@ -1,17 +1,36 @@
 import { Link } from "react-router-dom";
 import bgImg from "../assets/register.jpg";
+import useAxiosPublic from "../Hooks/useAxiosPublic";
+import { AuthContext } from "../Hooks/AuthProvider";
+import { useContext } from "react";
 const Register = () => {
-  const handelRegister = (e) => {
+  const axiosPublic = useAxiosPublic();
+  const { setIsUser } = useContext(AuthContext);
+  const handelRegister = async (e) => {
     e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    const data = {
+      name,
+      email,
+      password,
+      createdAt: new Date(),
+      status: "active",
+    };
+    try {
+      const result = await axiosPublic.post("/register", data);
+      alert(result.data.message || "Registration successful");
+      setIsUser(true);
+    } catch (err) {
+      alert(err.message);
+    }
   };
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-12">
       <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-[#F0F4F9] rounded-lg shadow-lg  lg:max-w-4xl ">
         <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
-          {/* <div className="flex justify-center mx-auto">
-            <img className="w-auto h-7 sm:h-8" src={logo} alt="" />
-          </div> */}
-
           <p className="mt-3 text-xl text-center text-gray-600 ">
             Get Your Free Account Now.
           </p>
@@ -68,8 +87,6 @@ const Register = () => {
               </div>
 
               <input
-                id="loggingPassword"
-                autoComplete="current-password"
                 name="password"
                 className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg    focus:border-blue-400 focus:ring-opacity-40  focus:outline-none focus:ring focus:ring-blue-300"
                 type="password"

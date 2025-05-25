@@ -1,8 +1,28 @@
 import { Link } from "react-router-dom";
 import bgImg from "../assets/register.jpg";
+import useAxiosPublic from "../Hooks/useAxiosPublic";
+import { useContext } from "react";
+import { AuthContext } from "../Hooks/AuthProvider";
 const Login = () => {
-  const handelLogin = (e) => {
+  const axiosPublic = useAxiosPublic();
+  const { setIsUser } = useContext(AuthContext);
+  const handelLogin = async (e) => {
     e.preventDefault();
+    const form = e.target;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    try {
+      const res = await axiosPublic.post("/login", { email, password });
+      alert(res.data.message);
+      setIsUser(true);
+    } catch (err) {
+      if (err.response) {
+        alert(err.response.data.message);
+      } else {
+        alert("Something went wrong.");
+      }
+    }
   };
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-12">
@@ -30,8 +50,6 @@ const Login = () => {
                 Email Address
               </label>
               <input
-                id="LoggingEmailAddress"
-                autoComplete="email"
                 name="email"
                 className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg    focus:border-blue-400 focus:ring-opacity-40  focus:outline-none focus:ring focus:ring-blue-300"
                 type="email"
@@ -49,7 +67,6 @@ const Login = () => {
               </div>
 
               <input
-                id="loggingPassword"
                 autoComplete="current-password"
                 name="password"
                 className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg    focus:border-blue-400 focus:ring-opacity-40  focus:outline-none focus:ring focus:ring-blue-300"
