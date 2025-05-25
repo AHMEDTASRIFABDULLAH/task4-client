@@ -43,7 +43,7 @@ This is a full-stack **User Management Admin Panel** built with **React**, **Tai
 
 - Node.js
 - Express.js
-- MongoDB (without Mongoose)
+- MongoDB
 - CORS & JSON parsing
 
 ---
