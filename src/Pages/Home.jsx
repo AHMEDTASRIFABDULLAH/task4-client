@@ -5,11 +5,10 @@ import { RiDeleteBin5Fill } from "react-icons/ri";
 import { TbLockFilled, TbLockOpen2 } from "react-icons/tb";
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
 import useAxiosPublic from "../Hooks/useAxiosPublic";
-
+import Swal from "sweetalert2";
 const Home = () => {
   const [selected, setSelected] = useState([]);
   const axiosPublic = useAxiosPublic();
-  console.log(selected);
   const {
     data: users = [],
     refetch,
@@ -21,21 +20,140 @@ const Home = () => {
       return data;
     },
   });
-
   const toggleSelect = (email) => {
     setSelected((prev) =>
       prev.includes(email) ? prev.filter((e) => e !== email) : [...prev, email]
     );
   };
-
   const toggleSelectAll = () => {
     if (selected.length === users.length) {
       setSelected([]);
     } else {
-      setSelected(users.map((u) => u.email));
+      setSelected(users.map((u) => u._id));
     }
   };
 
+  const handelDelete = async () => {
+    if (selected.length === 0) {
+      Swal.fire({
+        icon: "info",
+        title: "No user selected",
+        text: "Please select users to delete",
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosPublic.delete("/delete", {
+            data: { ids: selected },
+          });
+          refetch();
+          Swal.fire({
+            title: "Deleted!",
+            text: "Selected users have been deleted.",
+            icon: "success",
+          });
+          setSelected([]);
+        } catch (err) {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: err.message || "Something went wrong",
+          });
+        }
+      }
+    });
+  };
+  const handelBlock = async (newStatus) => {
+    if (selected.length === 0) {
+      Swal.fire({
+        icon: "info",
+        title: "No user selected",
+        text: "Please select users to update status",
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Are you sure?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Blocked!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosPublic.patch("/blocked", {
+            ids: selected,
+            status: newStatus,
+          });
+          refetch();
+          Swal.fire({
+            title: "Updated!",
+            icon: "success",
+          });
+          setSelected([]);
+        } catch (err) {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: err.response?.data?.message || "Something went wrong",
+          });
+        }
+      }
+    });
+  };
+  const handelUnBlock = async (newStatus) => {
+    if (selected.length === 0) {
+      Swal.fire({
+        icon: "info",
+        title: "No user selected",
+        text: "Please select users to update status",
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Are you sure?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Active it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosPublic.patch("/unblocked", {
+            ids: selected,
+            status: newStatus,
+          });
+          refetch();
+          Swal.fire({
+            title: "Updated!",
+            icon: "success",
+          });
+          setSelected([]);
+        } catch (err) {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: err.response?.data?.message || "Something went wrong",
+          });
+        }
+      }
+    });
+  };
   if (isLoading) return <p className="p-4">Loading...</p>;
   const newData = [
     { name: "Jan", uv: 400 },
@@ -47,15 +165,23 @@ const Home = () => {
   ];
   return (
     <div className="p-4 bg-white rounded-xl">
-      {/* Actions */}
       <div className="flex items-center gap-2 mb-3">
-        <button className="font-semibold text-blue-400 border-blue-400 border px-4 py-2 flex items-center gap-1 rounded-md cursor-pointer hover:bg-blue-50 transition">
+        <button
+          onClick={() => handelBlock("blocked")}
+          className="font-semibold text-blue-400 border-blue-400 border px-4 py-2 flex items-center gap-1 rounded-md cursor-pointer hover:bg-blue-50 transition"
+        >
           <TbLockFilled /> Block
         </button>
-        <button className="text-blue-400 border font-semibold border-blue-400 p-[11px] rounded-md cursor-pointer hover:bg-blue-50 transition">
+        <button
+          onClick={() => handelUnBlock("active")}
+          className="text-blue-400 border font-semibold border-blue-400 p-[11px] rounded-md cursor-pointer hover:bg-blue-50 transition"
+        >
           <TbLockOpen2 />
         </button>
-        <button className="text-red-500 border font-semibold border-red-500 p-[11px] rounded-md cursor-pointer hover:bg-red-50 transition">
+        <button
+          onClick={handelDelete}
+          className="text-red-500 border font-semibold border-red-500 p-[11px] rounded-md cursor-pointer hover:bg-red-50 transition"
+        >
           <RiDeleteBin5Fill />
         </button>
       </div>
@@ -91,8 +217,8 @@ const Home = () => {
                 <input
                   type="checkbox"
                   className="accent-blue-500"
-                  checked={selected.includes(user.email)}
-                  onChange={() => toggleSelect(user.email)}
+                  checked={selected.includes(user._id)}
+                  onChange={() => toggleSelect(user._id)}
                 />
               </td>
               <td className="p-2">
@@ -106,7 +232,6 @@ const Home = () => {
                   {new Date(user.createdAt).toLocaleTimeString()}
                 </div>
                 <BarChart width={70} height={30} data={newData}>
-                  {/* <CartesianGrid strokeDasharray="3 3" /> */}
                   <Bar dataKey="uv" fill="#8ac8ff" barSize={8} />
                 </BarChart>
               </td>
